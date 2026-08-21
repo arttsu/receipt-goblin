@@ -1,0 +1,23 @@
+[project]
+name = "receipt-goblin"
+version = "0.1.0"
+description = "A Telegram bot to help convert supermarket receipts into detailed ledger transactions."
+readme = "README.md"
+authors = [
+    { name = "Artem Tseranu", email = "git@arttsu.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+receipt-goblin = "receipt_goblin:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.39.10",
+    "ruff>=0.16.4",
+]
