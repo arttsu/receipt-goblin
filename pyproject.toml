@@ -7,7 +7,9 @@ authors = [
     { name = "Artem Tseranu", email = "git@arttsu.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "python-telegram-bot>=22.8",
+]
 
 [project.scripts]
 receipt-goblin = "receipt_goblin:main"
