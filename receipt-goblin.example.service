@@ -1,0 +1,18 @@
+[Unit]
+Description=A Telegram bot to help convert supermarket receipts into detailed ledger transactions.
+After=network-online.target
+
+[Service]
+Type=simple
+User=receipt-goblin
+WorkingDirectory=/opt/receipt-goblin
+
+EnvironmentFile=/etc/receipt-goblin.env
+
+ExecStart=/home/receipt-goblin/.local/bin/uv run receipt-goblin
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
