@@ -7,9 +7,10 @@ Type=simple
 User=receipt-goblin
 WorkingDirectory=/opt/receipt-goblin
 
-EnvironmentFile=/etc/receipt-goblin.env
+Environment=RECEIPT_GOBLIN_TOKEN=secret
+Environment=OPENAI_API_KEY=secret
 
-ExecStart=/home/receipt-goblin/.local/bin/uv run receipt-goblin
+ExecStart=uv run receipt-goblin
 
 Restart=always
 RestartSec=10
