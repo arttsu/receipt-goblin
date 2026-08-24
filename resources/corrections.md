@@ -16,3 +16,4 @@ Göhrde Erdbeeren -> Expenses:Consumables:Food:Staples:FrozenFruit
 BIO Kartoffeln -> Expenses:Consumables:Food:Staples:Potatoes
 UH Rispentomaten -> Expenses:Consumables:Food:Staples:Tomatos
 Saupiq.Thunf.Natur -> Expenses:Consumables:Food:Staples:CannedTuna
+Vig Sardinen (2) -> Expenses:Consumables:Food:Staples:CannedSardines
