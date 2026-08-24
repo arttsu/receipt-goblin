@@ -16,7 +16,6 @@ class Bot:
         self.env = env
         self.openai = OpenAI()
         self.system_message = Path("resources/system_message.md").read_text()
-        self.corrections = Path("resources/corrections.md").read_text()
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         self.logger.info(f"START; {update}")  # TODO: -> debug
@@ -39,6 +38,8 @@ class Bot:
         self.logger.info("Processing a receipt...")
         await context.bot.send_message(photo_update.chat_id, text="Processing...")
 
+        corrections = Path(self.env.corrections_path).read_text()
+
         response = self.openai.responses.create(
             model="gpt-5.6",
             input=[
@@ -48,7 +49,7 @@ class Bot:
                 },
                 {
                     "role": "developer",
-                    "content": [{"type": "input_text", "text": self.corrections}],
+                    "content": [{"type": "input_text", "text": corrections}],
                 },
                 {
                     "role": "user",
