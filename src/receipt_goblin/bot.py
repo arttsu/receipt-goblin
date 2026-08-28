@@ -36,7 +36,7 @@ class Bot:
         file = await photo_update.photo.get_file()
 
         self.logger.info("Processing a receipt...")
-        await context.bot.send_message(photo_update.chat_id, text="Processing...")
+        await context.bot.send_message(photo_update.chat_id, text="on it... 😈")
 
         mappings = Path("resources/mappings.tsv").read_text()
 
