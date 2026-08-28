@@ -38,7 +38,7 @@ class Bot:
         self.logger.info("Processing a receipt...")
         await context.bot.send_message(photo_update.chat_id, text="Processing...")
 
-        corrections = Path(self.env.corrections_path).read_text()
+        mappings = Path("resources/mappings.tsv").read_text()
 
         response = self.openai.responses.create(
             model="gpt-5.6",
@@ -49,7 +49,7 @@ class Bot:
                 },
                 {
                     "role": "developer",
-                    "content": [{"type": "input_text", "text": corrections}],
+                    "content": [{"type": "input_text", "text": mappings}],
                 },
                 {
                     "role": "user",
