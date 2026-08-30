@@ -48,6 +48,8 @@ Mapping accounts are relative to:
 
 Expenses:Consumables:
 
+EXCEPTION: If an account in the mapping file is marked by preceding `!`, it is the exact account to use without the relative prefix.
+
 After the transaction, propose new mappings only for products that the existing mappings do not already cover.
 
 Normalize proposed mapping names for future matching.
