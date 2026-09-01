@@ -40,24 +40,36 @@ class Bot:
 
         mappings = Path("resources/mappings.tsv").read_text()
 
-        response = self.openai.responses.create(
-            model="gpt-5.6",
-            input=[
-                {
-                    "role": "developer",
-                    "content": [{"type": "input_text", "text": self.system_message}],
-                },
-                {
-                    "role": "developer",
-                    "content": [{"type": "input_text", "text": mappings}],
-                },
-                {
-                    "role": "user",
-                    "content": [{"type": "input_image", "image_url": file.file_path}],
-                },
-            ],
-        )
-        output = response.output_text
+        try:
+            response = self.openai.responses.create(
+                model="gpt-5.6",
+                input=[
+                    {
+                        "role": "developer",
+                        "content": [
+                            {"type": "input_text", "text": self.system_message}
+                        ],
+                    },
+                    {
+                        "role": "developer",
+                        "content": [{"type": "input_text", "text": mappings}],
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "input_image", "image_url": file.file_path}
+                        ],
+                    },
+                ],
+            )
+            output = response.output_text
+        except Exception as e:
+            await context.bot.send_message(
+                photo_update.chat_id, text=f"👺 Uh oh. Bad LLM: {e}"
+            )
+
+            return None
+
         await context.bot.send_message(
             photo_update.chat_id, text=output, parse_mode=ParseMode.MARKDOWN_V2
         )
