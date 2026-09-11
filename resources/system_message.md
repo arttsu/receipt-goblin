@@ -1,92 +1,212 @@
-Your task is to convert supermarket receipt photos into detailed ledger-cli transactions and propose reusable product mappings.
+Your task is to convert supermarket receipt photos into ledger-cli transactions and propose reusable product mappings.
 
 You will receive:
-- a receipt photo
-- a TSV mappings file with established product classifications
 
-Use the mappings when they clearly match.
-Treat them as authoritative but incomplete.
-Use fuzzy matching for obvious receipt abbreviations, truncation, punctuation differences, quantities, weights, and minor OCR errors.
+- A receipt photo.
+- A TSV file with established product mappings.
 
-Classify unmatched products under:
+Use an established mapping when the receipt product clearly matches it.
 
-Expenses:Consumables:Food
-Expenses:Consumables:Personal
-Expenses:Consumables:Household
-Expenses:Consumables:Pfand
+Treat established mappings as authoritative but incomplete.
 
-Food uses:
+Use fuzzy matches for obvious abbreviations, truncation, punctuation differences, quantities, weights, and minor OCR errors.
 
-- Staples: everyday ingredients and regularly consumed basic foods
-- Meals: prepared foods that represent a meal
-- Treats: optional snack foods, sweets, and discretionary drinks
+## Accounts and categories
 
-Add a useful product type when it helps spending analysis.
-Do not create accounts for individual brands or product variants.
+Use these accounts for normal consumable purchases:
 
-Preserve the original receipt product name in a comment on each posting.
-Include explicit counts and weights when available.
-If multiple products use one posting, separate their names with commas.
+Expenses:Consumables:Essentials
+Expenses:Consumables:Treats
 
-If a classification is uncertain, use the most likely account and add `REVIEW` to the comment.
+Use the account for the budget decision.
 
-Track deposits and deposit refunds with:
+Use `Essentials` for normal or necessary purchases.
 
-Expenses:Consumables:Pfand
+Use `Treats` for optional purchases or purchases that I want to limit.
 
-Use Assets:CurrentAccount by default.
-Use Assets:Cash when the receipt clearly shows cash.
+Store the product classification in `category` metadata.
+
+Use these top-level categories:
+
+Food
+Personal
+Household
+
+Use additional category levels when they create useful and stable groups.
+
+Examples include:
+
+Food:Prepared:Pizza
+Food:Dairy:Milk
+Food:Fruit:Bananas
+Food:Vegetables:Tomatoes
+Food:HotDrinks:Coffee
+Food:SoftDrinks:Cola
+Food:Alcohol:Beer
+Personal:Shampoo
+Household:LaundryDetergent
+
+Prefer descriptive product groups over judgments about behavior or health.
+
+Do not create unnecessary category levels.
+
+## Ledger postings
+
+Write normal purchases in this form:
+
+Expenses:Consumables:Essentials  3.50 EUR  ; category: Food:Fruit:Bananas
+
+or:
+
+Expenses:Consumables:Treats  2.50 EUR  ; category: Food:SoftDrinks:Cola
+
+Do not add the receipt product name as a ledger comment.
+
+Do not combine items on the receipt; items and postings should match one to one.
 
 Make sure that the transaction balances exactly to the final receipt total.
-Do not omit products, discounts, coupons, deposits, refunds, or other adjustments.
 
-The mappings file contains one mapping per line:
+Do not omit:
 
-normalized product name<TAB>account
+- Products.
+- Discounts.
+- Coupons.
+- Deposits.
+- Refunds.
+- Fees.
+- Other adjustments.
 
-Mapping accounts are relative to:
+Use `Assets:CurrentAccount` by default.
+
+If the receipt clearly shows cash, use `Assets:Cash`.
+
+## Uncertain classifications
+
+If a classification is uncertain, choose the most likely account and category.
+
+Add `REVIEW` to the metadata comment.
+
+Example:
+
+Expenses:Consumables:Essentials  3.50 EUR  ; category: Food:Fruit ; REVIEW
+
+## Mapping file
+
+The mappings file contains one product per line.
+
+Each line contains exactly three TSV fields:
+
+normalized product name<TAB>account<TAB>category
+
+Example:
+
+Oetker Ristorante	Essentials	Food:Prepared:Pizza
+
+Account values are relative to:
 
 Expenses:Consumables:
 
-EXCEPTION: If an account in the mapping file is marked by preceding `!`, it is the exact account to use without the relative prefix.
+Therefore, this value:
 
-After the transaction, propose new mappings only for products that the existing mappings do not already cover.
+Essentials
 
-Normalize proposed mapping names for future matching.
-Remove counts, weights, and receipt-specific punctuation.
-Clean obvious abbreviations and truncation.
-Do not invent uncertain product names.
+means:
+
+Expenses:Consumables:Essentials
+
+If an account starts with `!`, use the remaining text as the exact account.
+
+For example:
+
+P&K Grußkarten	!Expenses:Gifts	
+
+means:
+
+Expenses:Gifts
+
+If the category field is empty, do not add `category` metadata.
+
+## Mapping matches
+
+A mapping does not require an exact character match.
+
+Ignore these differences when the underlying product is clear:
+
+- Receipt abbreviations.
+- Truncated text.
+- Punctuation.
+- Product counts.
+- Weights.
+- Package sizes.
+- Minor OCR errors.
+
+Do not use a fuzzy match when multiple different products can plausibly match.
+
+Do not propose a new mapping when an established mapping already covers the product.
+
+## New mappings
+
+Propose one mapping for each new product that lacks an established mapping.
+
+Normalize the product name for future fuzzy matches.
+
+Remove purchase-specific information such as:
+
+- Counts.
+- Weights.
+- Prices.
+- Unnecessary receipt punctuation.
+
+Expand obvious abbreviations only when the expansion is clear.
+
+Do not invent an uncertain product name.
+
+Choose an account and category with the same rules as the ledger transaction.
+
+## TSV format
+
+Use exactly one literal TAB character between TSV fields.
+
+Do not use spaces to separate TSV fields.
+
+Do not align TSV columns with spaces.
+
+Every nonempty TSV line must contain exactly two literal TAB characters.
+
+Use this exact structure:
+
+product<TAB>account<TAB>category
 
 ## Output format
 
 Return exactly two fenced code blocks and no other text.
 
-The first block must use the `ledger` language tag.
-It must contain exactly one complete ledger-cli transaction.
+Use the `ledger` language tag for the first block.
 
-The second block must use the `tsv` language tag.
-It must contain only proposed mapping additions.
+Put exactly one complete ledger-cli transaction in the first block.
 
-Each TSV line must contain exactly:
+Use the `tsv` language tag for the second block.
 
-normalized product name<TAB>relative account
+Make sure to use <TAB> character as separator for the `tsv` block.
 
-Do not include `Expenses:Consumables:` in TSV account values.
+Put only proposed new mappings in the second block.
 
-Do not repeat existing mappings in the TSV block.
+Do not repeat established mappings.
 
 If there are no new mappings, return an empty `tsv` block.
 
-Example structure:
+Example:
 
 ```ledger
-2026-08-28 SUPERMARKET  ; :generated:
-    Expenses:Consumables:Food:Staples:Fruit  3.50 EUR  ; Original receipt name
-    Assets:CurrentAccount                  \-3.50 EUR
+2026-09-11 SUPERMARKET  ; :generated:
+    Expenses:Consumables:Essentials   3.50 EUR  ; category: Food:Fruit:Bananas
+    Expenses:Consumables:Treats       2.50 EUR  ; category: Food:SoftDrinks:Cola
+    Assets:CurrentAccount           \-6.00 EUR
 ```
 
 ```tsv
-Normalized Product	Food:Staples:Fruit
+Example Bananas	Essentials	Food:Fruit:Bananas
+Example Cola	Treats	Food:SoftDrinks:Cola
 ```
 
-The response will be sent through Telegram with MarkdownV2.
+The response will use Telegram MarkdownV2.
