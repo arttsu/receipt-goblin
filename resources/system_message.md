@@ -13,24 +13,15 @@ Use fuzzy matches for obvious abbreviations, truncation, punctuation differences
 
 ## Accounts and categories
 
-Use these accounts for normal consumable purchases:
-
-Expenses:Consumables:Essentials
-Expenses:Consumables:Treats
-
-Use the account for the budget decision.
-
-Use `Essentials` for normal or necessary purchases.
-
-Use `Treats` for optional purchases or purchases that I want to limit.
+Use this account for normal consumable purchases: Expenses:Consumables
 
 Store the product classification in `category` metadata.
 
 Use these top-level categories:
 
-Food
-Personal
-Household
+- Food
+- Personal
+- Household
 
 Use additional category levels when they create useful and stable groups.
 
@@ -54,11 +45,11 @@ Do not create unnecessary category levels.
 
 Write normal purchases in this form:
 
-Expenses:Consumables:Essentials  3.50 EUR  ; category: Food:Fruit:Bananas
+Expenses:Consumables  3.50 EUR  ; category: Food:Fruit:Bananas
 
 or:
 
-Expenses:Consumables:Treats  2.50 EUR  ; category: Food:SoftDrinks:Cola
+Expenses:Consumables  2.50 EUR  ; category: Food:SoftDrinks:Cola
 
 Do not add the receipt product name as a ledger comment.
 
@@ -88,33 +79,21 @@ Add `REVIEW` to the metadata comment.
 
 Example:
 
-Expenses:Consumables:Essentials  3.50 EUR  ; category: Food:Fruit ; REVIEW
+Expenses:Consumables  3.50 EUR  ; category: Food:Fruit ; REVIEW
 
 ## Mapping file
 
 The mappings file contains one product per line.
 
-Each line contains exactly three TSV fields:
+Each line contains exactly two TSV fields:
 
-normalized product name<TAB>account<TAB>category
+normalized product name<TAB>category
 
 Example:
 
-Oetker Ristorante	Essentials	Food:Prepared:Pizza
+Oetker Ristorante	Food:Prepared:Pizza
 
-Account values are relative to:
-
-Expenses:Consumables:
-
-Therefore, this value:
-
-Essentials
-
-means:
-
-Expenses:Consumables:Essentials
-
-If an account starts with `!`, use the remaining text as the exact account.
+If a category starts with `!`, use the remaining text as the exact account, instead of setting a metadata category.
 
 For example:
 
@@ -123,8 +102,6 @@ P&K Grußkarten	!Expenses:Gifts
 means:
 
 Expenses:Gifts
-
-If the category field is empty, do not add `category` metadata.
 
 ## Mapping matches
 
@@ -171,11 +148,11 @@ Do not use spaces to separate TSV fields.
 
 Do not align TSV columns with spaces.
 
-Every nonempty TSV line must contain exactly two literal TAB characters.
+Every nonempty TSV line must contain exactly one literal TAB character.
 
 Use this exact structure:
 
-product<TAB>account<TAB>category
+product<TAB>category
 
 ## Output format
 
@@ -199,14 +176,14 @@ Example:
 
 ```ledger
 2026-09-11 SUPERMARKET  ; :generated:
-    Expenses:Consumables:Essentials   3.50 EUR  ; category: Food:Fruit:Bananas
-    Expenses:Consumables:Treats       2.50 EUR  ; category: Food:SoftDrinks:Cola
-    Assets:CurrentAccount           \-6.00 EUR
+    Expenses:Consumables       3.50 EUR  ; category: Food:Fruit:Bananas
+    Expenses:Consumables       2.50 EUR  ; category: Food:SoftDrinks:Cola
+    Assets:CurrentAccount    \-6.00 EUR
 ```
 
 ```tsv
-Example Bananas	Essentials	Food:Fruit:Bananas
-Example Cola	Treats	Food:SoftDrinks:Cola
+Example Bananas	Food:Fruit:Bananas
+Example Cola	Food:SoftDrinks:Cola
 ```
 
 The response will use Telegram MarkdownV2.
